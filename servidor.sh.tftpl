@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+mkdir -p /opt/terraform-aula
+cat > /opt/terraform-aula/index.html <<'HTML'
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Teste Terraform</title></head>
+<body><h1>Terraform funcionando!</h1><p>Servidor: ${regiao}</p></body></html>
+HTML
+cat > /etc/systemd/system/terraform-aula.service <<'SERVICE'
+[Unit]
+Description=Pagina simples para a atividade Terraform
+After=network.target
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -m http.server 80 --bind 0.0.0.0 --directory /opt/terraform-aula
+Restart=always
+[Install]
+WantedBy=multi-user.target
+SERVICE
+systemctl daemon-reload
+systemctl enable --now terraform-aula.service
